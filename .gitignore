@@ -4,6 +4,10 @@
 # Log file
 *.log
 
+.idea
+WeChatPublicAccount.iml
+.mvn
+
 # BlueJ files
 *.ctxt
 
