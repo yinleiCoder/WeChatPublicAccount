@@ -25,11 +25,12 @@
   ### :christmas_tree:开发工具 :
 
   - JetBrains Idea 2020.1.3
-
+- 内网穿透：Ngrok
   
 
-  :link:遵循开源协议
-
+  
+:link:遵循开源协议
+  
   ```
   Copyright (c) 2020. yinlei <1099129793@qq.com>
   
@@ -44,7 +45,7 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  ```
-
+```
+  
   
 
