@@ -11,6 +11,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @RestController
@@ -56,17 +58,40 @@ public class WxController {
      * MsgType	消息类型，文本为text
      * Content	文本消息内容
      * MsgId	消息id，64位整型
+     *
+     * 被动回复用户消息：
+     * 当用户发送消息给公众号时（或某些特定的用户操作引发的事件推送时），会产生一个POST请求，开发者可以在响应包（Get）中返回特定XML结构，来对该消息进行响应（现支持回复文本、图片、图文、语音、视频、音乐）。严格来说，发送被动响应消息其实并不是一种接口，而是对微信服务器发过来消息的一次回复。
+     * 微信服务器在将用户的消息发给公众号的开发者服务器地址（开发者中心处配置）后，微信服务器在五秒内收不到响应会断掉连接，并且重新发起请求，总共重试三次，如果在调试中，发现用户无法收到响应的消息，可以检查是否消息处理超时。关于重试的消息排重，有msgid的消息推荐使用msgid排重。事件类型消息推荐使用FromUserName + CreateTime 排重。
+     * 如果开发者希望增强安全性，可以在开发者中心处开启消息加密，这样，用户发给公众号的消息以及公众号被动回复用户消息都会继续加密，详见被动回复消息加解密说明。
+     * 假如服务器无法保证在五秒内处理并回复，必须做出下述回复，这样微信服务器才不会对此作任何处理，并且不会发起重试（这种情况下，可以使用客服消息接口进行异步回复），否则，将出现严重的错误提示。详见下面说明：
+     * 1、直接回复success（推荐方式） 2、直接回复空串（指字节长度为0的空字符串，而不是XML结构体中content字段的内容为空）
+     *
      */
     @PostMapping("/")
-    public void receiveCommonUserMessage() {
+    public void receiveCommonUserMessage() throws UnsupportedEncodingException {
 //        System.out.println("公众号用户发来的消息");
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
+        HttpServletResponse response = requestAttributes.getResponse();
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
         // 处理用户发来的消息和推送
         try {
             Map<String, String> requestMap = WxService.handleUserSendTextMessage(request.getInputStream());
 //            System.out.println(requestMap);
-
+            // 回复用户消息
+//            String respnseXMLData = "<xml>\n" +
+//                    "  <ToUserName><![CDATA["+requestMap.get("FromUserName")+"]]></ToUserName>\n" +
+//                    "  <FromUserName><![CDATA["+requestMap.get("ToUserName")+"]]></FromUserName>\n" +
+//                    "  <CreateTime>"+System.currentTimeMillis()/1000+"</CreateTime>\n" +
+//                    "  <MsgType><![CDATA[text]]></MsgType>\n" +
+//                    "  <Content><![CDATA["+"你好!!!"+"]]></Content>\n" +
+//                    "</xml>\n";
+            String respnseXMLData = WxService.handleReplyToUserMsg(requestMap);
+            PrintWriter writer = response.getWriter();
+            writer.print(respnseXMLData);
+            writer.flush();
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

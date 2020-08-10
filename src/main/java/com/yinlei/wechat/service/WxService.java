@@ -1,5 +1,7 @@
 package com.yinlei.wechat.service;
 
+import com.thoughtworks.xstream.XStream;
+import com.yinlei.wechat.entity.*;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -87,4 +89,76 @@ public class WxService {
         return map;
     }
 
+    /**
+     * 被动回复用户消息:
+     * 1 回复文本消息
+     *
+     * 2 回复图片消息
+     *
+     * 3 回复语音消息
+     *
+     * 4 回复视频消息
+     *
+     * 5 回复音乐消息
+     *
+     * 6 回复图文消息
+     * @param requestMap
+     * @return 返回通用的xml数据包
+     */
+    public static String handleReplyToUserMsg(Map<String, String> requestMap) {
+        BaseMessage msg = null;
+        String msgType = requestMap.get("MsgType");
+        switch (msgType) {
+            case "text":// 文本消息
+                msg = handleTextMessage(requestMap);
+                break;
+            case "image":
+                break;
+            case "voice":
+                break;
+            case "video":
+                break;
+            case "music":
+                break;
+            case "news":
+                break;
+            default:
+                break;
+        }
+//        System.out.println(msg);
+        // 将消息对象转换为xml
+        if (msg != null) {
+            return handleBeanToXML(msg);
+        }
+        return null;
+    }
+
+    /**
+     * 将消息对象转换为xml
+     * @param msg
+     * @return
+     */
+    private static String handleBeanToXML(BaseMessage msg) {
+        // 将java对象转化为xml数据
+        // 需要处理的@XStreamAlias("xml")注解的类
+        XStream stream = new XStream();
+        stream.processAnnotations(TextMessage.class);
+        stream.processAnnotations(ImageMessage.class);
+        stream.processAnnotations(MusicMessage.class);
+        stream.processAnnotations(NewsMessage.class);
+        stream.processAnnotations(VideoMessage.class);
+        stream.processAnnotations(VoiceMessage.class);
+        String xml = stream.toXML(msg);
+        return xml;
+    }
+
+    /**
+     * 处理文本消息
+     * @param requestMap
+     * @return
+     */
+    private static BaseMessage handleTextMessage(Map<String, String> requestMap) {
+        TextMessage textMessage = new TextMessage(requestMap, "文本消息测试成功！");
+        return textMessage;
+    }
 }
