@@ -1,10 +1,18 @@
 package com.yinlei.wechat.service;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class WxService {
@@ -52,7 +60,31 @@ public class WxService {
             e.printStackTrace();
         }
         return null;
+    }
 
+    /**
+     * 解析XML：dom4j
+     * 通用的解析：因为文本消息、图片消息官方给的示例都是xml数据，长得差不多，这里都封装成一个map就行了
+     * @param is 输入流
+     * @return xml解析好的map（包含用户发送的消息）
+     */
+    public static Map<String, String> handleUserSendTextMessage(InputStream is) {
+        Map<String, String> map= new HashMap<>();
+        SAXReader reader = new SAXReader();
+        try {
+            // 读取输入流，获取文档对象
+            Document document = reader.read(is);
+            // 根据文档对象获取根节点
+            Element root = document.getRootElement();
+            // 获取根节点所有的子节点
+            List<Element> elements = root.elements();
+            for (Element e : elements) {
+                map.put(e.getName(), e.getStringValue());
+            }
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
 }
