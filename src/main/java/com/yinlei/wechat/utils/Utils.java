@@ -1,9 +1,8 @@
 package com.yinlei.wechat.utils;
 
+
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +12,7 @@ public class Utils {
     public static final int DEF_READ_TIMEOUT = 30000;
     public static String userAgent =  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";
 
-    //配置您申请的KEY
-    public static final String APPKEY ="e43a5856c31e50e6cb0c278b42a8a25c"; //天气预报的KEY
+
 
 
     /**
@@ -87,5 +85,31 @@ public class Utils {
             }
         }
         return sb.toString();
+    }
+
+
+    /**
+     * access_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。
+     * @param url
+     * @return
+     */
+    public static String getAccessToken(String url) {
+        try {
+            URL url1 = new URL(url);
+            URLConnection urlConnection = url1.openConnection();
+            InputStream is = urlConnection.getInputStream();
+            byte[] b = new byte[1024];
+            int len;
+            StringBuilder stringBuilder = new StringBuilder();
+            while((len=is.read(b))!= -1) {
+                stringBuilder.append(new String(b, 0, len));
+            }
+            return stringBuilder.toString();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

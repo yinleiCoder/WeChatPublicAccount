@@ -75,6 +75,7 @@ public class WxController {
         HttpServletResponse response = requestAttributes.getResponse();
         request.setCharacterEncoding("utf8");
         response.setCharacterEncoding("utf8");
+
         // 处理用户发来的消息和推送
         try {
             Map<String, String> requestMap = WxService.handleUserSendTextMessage(request.getInputStream());

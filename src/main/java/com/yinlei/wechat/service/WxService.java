@@ -21,7 +21,41 @@ import static com.yinlei.wechat.utils.Utils.net;
 public class WxService {
 
     private static final String WX_TOKEN = "yinleitoken";
+    //配置您申请的KEY
+    public static final String APPKEY ="e43a5856c31e50e6cb0c278b42a8a25c"; //天气预报的KEY
 
+    //grant_type	是	获取access_token填写client_credential
+    //appid	是	第三方用户唯一凭证
+    //secret	是	第三方用户唯一凭证密钥，即appsecret
+    private static final String GET_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
+    private static final String APP_ID = "wx779b0f2cb7c522e4";
+    private static final String APP_SECRET = "748dc972277ed3956e8e1ae08156e22c";
+    private static MyAccessToken myAccessToken; // 存储token
+
+    /**
+     * 获取AccessToken:
+     * access_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。
+     * {"access_token":"36_-4ProMrz8IbkN7W4Lmgin1TynW5lrh3msg4oJzhueok_Xbvt9bVC29fRfEqGz_Iy-bGE-bm2OYCbVE8CxIj86IvBoNx6zeDrGaX9e_bXEkeyQ2HZcnpetgg1IwwmmFjzeP-_h-HqmiqecaJKZZGjABASSZ","expires_in":7200}
+     * 如果这里报错说ip不在该范围，应该在公众号平台上的“公众号开发信息”--》IP白名单添加IP
+     */
+    private static void getAccessToken() {
+        String url = GET_TOKEN_URL.replace("APPID",APP_ID)
+                .replace("APPSECRET",APP_SECRET);
+        String accessToken = Utils.getAccessToken(url);
+//        System.out.println(accessToken);
+        JSONObject jsonObject = JSONObject.fromObject(accessToken);
+        String token = jsonObject.getString("access_token");
+        String expiresIn = jsonObject.getString("expires_in");
+        myAccessToken = new MyAccessToken(token, expiresIn);
+    }
+
+    // 对外提供获取token
+    public static String getAccessTokenToExternal() {
+        if (myAccessToken == null || myAccessToken.isExpired()) {
+            getAccessToken(); // token过期或不存在，重新获取token
+        }
+        return myAccessToken.getAccessToken();
+    }
 
     /**
      * 微信开发者验证签名
@@ -186,7 +220,7 @@ public class WxService {
             String url ="http://op.juhe.cn/onebox/weather/query";//请求接口地址
             Map params = new HashMap();//请求参数
             params.put("cityname", msg);//要查询的城市，如：温州、上海、北京
-            params.put("key",Utils.APPKEY);//应用APPKEY(应用详细页查询)
+            params.put("key", APPKEY);//应用APPKEY(应用详细页查询)
             params.put("dtype","");//返回数据的格式,xml或json，默认json
 
             try {
