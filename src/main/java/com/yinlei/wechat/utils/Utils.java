@@ -112,4 +112,34 @@ public class Utils {
         }
         return null;
     }
+
+    /**
+     * 自定义菜单的请求示例：http请求方式：POST（请使用https协议） https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN
+     * @param url
+     * @param data
+     * @return
+     */
+    public static String postCustomMenu(String url, String data) {
+        try {
+            URL url1 = new URL(url);
+            URLConnection urlConnection = url1.openConnection();
+            urlConnection.setDoOutput(true);
+            OutputStream outputStream = urlConnection.getOutputStream();
+            outputStream.write(data.getBytes());
+            outputStream.close();
+            InputStream is = urlConnection.getInputStream();
+            byte[] b = new byte[1024];
+            int len;
+            StringBuilder stringBuilder = new StringBuilder();
+            while((len=is.read(b))!= -1) {
+                stringBuilder.append(new String(b, 0, len));
+            }
+            return stringBuilder.toString();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
