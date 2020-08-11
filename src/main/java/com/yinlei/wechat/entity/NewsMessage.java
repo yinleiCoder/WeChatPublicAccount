@@ -16,15 +16,18 @@ import java.util.Map;
 @AllArgsConstructor
 public class NewsMessage extends BaseMessage{
 
+    @XStreamAlias("ArticleCount")
     private String articleCount;
+
+    @XStreamAlias("Articles")
     private List<Article> articles = new ArrayList<>();
 
 
-    public NewsMessage(Map<String, String> requestMap, String articleCount, List<Article> articles) {
+    public NewsMessage(Map<String, String> requestMap, List<Article> articles) {
         super(requestMap);
         // 设置消息的msgType
         this.setMsgType("news");
-        this.articleCount = articleCount;
+        this.articleCount = articles.size()+"";
         this.articles = articles;
 
     }
