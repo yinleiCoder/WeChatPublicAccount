@@ -25,12 +25,33 @@
   ### :christmas_tree:开发工具 :
 
   - JetBrains Idea 2020.1.3
-- 内网穿透：Ngrok
+  - 内网穿透：Ngrok
+
+  
+
+  ### :bookmark_tabs:需求：
+
+  - [x] 微信开发者的接入
+  - [x] 消息处理
+  - [x] 添加聚合数据：天气实时查询等
+  - [x] ACCESS TOKEN的处理
+  - [x] 自定义菜单
+  - [ ] 模板消息
+  - [ ] 素材管理
+  - [ ] 二维码
+  - [ ] 网页开发
+
+  由于使用的是个人微信公众号，不支持微信认证，所以在微信公众号后台-》接口权限
+
+  可以看到很多不能用。如果想全部使用可申请“微信测试号或服务号”
+
   
 
   
+
+
 :link:遵循开源协议
-  
+
   ```
   Copyright (c) 2020. yinlei <1099129793@qq.com>
   
@@ -45,7 +66,7 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-```
-  
+  ```
+
   
 

@@ -152,24 +152,17 @@ public class WxService {
                 msg = handleTextMessage(requestMap);
                 break;
             case "image":
-                break;
             case "voice":
-                break;
             case "video":
-                break;
             case "music":
-                break;
             case "news":
-                break;
             default:
+                msg =  new TextMessage(requestMap, "暂不支持，请谅解！\n请按照以下规则发送：\n1. 输入 \"美女视频网站\" 则返回网站链接图文消息\n2.输入城市名实时查询天气信息，例如 \"绵阳\" \n ");
                 break;
         }
 //        System.out.println(msg);
         // 将消息对象转换为xml
-        if (msg != null) {
-            return handleBeanToXML(msg);
-        }
-        return null;
+        return handleBeanToXML(msg);
     }
 
     /**
@@ -194,19 +187,17 @@ public class WxService {
     /**
      * 处理文本消息： https://www.juhe.cn/ 聚合数据
      * 星座运势:https://www.juhe.cn/docs/api/id/58
-     * 笑话大全:https://www.juhe.cn/docs/api/id/95
      * 天气预报:https://www.juhe.cn/docs/api/id/73
-     * 新闻头条:https://www.juhe.cn/docs/api/id/235
-     *IP地址查询：https://www.juhe.cn/docs/api/id/1
+     * 手机号码归属地查询:https://www.juhe.cn/docs/api/id/11
      * @param requestMap
      * @return
      */
     private static BaseMessage handleTextMessage(Map<String, String> requestMap) {
         // 用户发来的内容
         String msg = requestMap.get("Content");
-        if (msg.equals("图文")) {
+        if (msg.equals("美女视频网站")) {
             List<Article> articles = new ArrayList<>();
-            articles.add(new Article("图文消息标题", "图文消息的详细介绍", "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=307923566,1492523027&fm=26&gp=0.jpg", "http://yinleilei.com"));
+            articles.add(new Article("我的网站", "yinleilei.com", "https://giligili-yinlei.oss-cn-shanghai.aliyuncs.com/yinliyuan/liyuan32.jpg", "http://yinleilei.com"));
             NewsMessage nm = new NewsMessage(requestMap, articles);
             return nm;
         }
@@ -241,19 +232,18 @@ public class WxService {
                     String time = realtime.getString("time");
                     String week = "星期"+realtime.getString("week");
                     JSONObject weather = realtime.getJSONObject("weather");
-                    String temperature = "温度："+weather.getString("temperature");
-                    String humidity = "湿度："+weather.getString("humidity");
+                    String temperature = "温度："+weather.getString("temperature") +"℃";
+                    String humidity = "湿度："+weather.getString("humidity") +"%RH";
                     String info = "天气情况："+weather.getString("info");
 
-                    return city_name+"\n"+temperature+"\n"+humidity+"\n"+info+"\n"+date+"\n"+time+"\n"+week;
+                    return "🏦"+city_name+"\n"+temperature+"\n"+humidity+"\n"+info+"\n"+date+"  "+time+"\n"+week+"\n实时天气查询---by 聚合数据🎉🎉🎉";
                 }else{
                     System.out.println(object.get("error_code")+":"+object.get("reason"));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return result;
-
+            return "暂不支持，请谅解！\n请按照以下规则发送：\n1. 输入 \"美女视频网站\" 则返回网站链接图文消息\n2.输入城市名实时查询天气信息，例如 \"绵阳\" \n ";
     }
 
 }
